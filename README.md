@@ -1,7 +1,7 @@
-#Simple Authentication Service
+# Simple Authentication Service
 This project provides a simple authentication service using Go. It supports functionalities such as user creation, role management, and token-based authentication.
 
-##Structure
+## Structure
 The project is organized into the following structure:
 ```
 ├── Makefile
@@ -26,22 +26,20 @@ The project is organized into the following structure:
 
 ```
 
-##Getting Started
-###Prerequisites
-Install Go[].
+## Getting Started
+### Prerequisites
+Install Go[https://go.dev/].
 
 ### Running the application
 Clone the repository:
 ```
 git clone <repository-url>
 cd <repository-directory>
-
 ```
 Build and run the application:
 ```
 make build
 make run
-
 ```
 Running the Tests
 ```
