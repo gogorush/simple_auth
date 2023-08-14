@@ -47,10 +47,13 @@ make test
 ```
 
 ### Features
-User registration and authentication.
-Role management (create, delete, assign).
-Token-based authentication using JWT.
-Thread-safe in-memory storage.
+- User registration and authentication.
+- Role management (create, delete, assign).
+- Token-based authentication using JWT.
+- Thread-safe in-memory storage.
+
+### External libs used
+- golang-jwt
 
 ### License
 This project is licensed under the MIT License.
