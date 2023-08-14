@@ -47,8 +47,8 @@ func TestInvalidateToken(t *testing.T) {
 	assert.False(t, exists, "Token should not exist in the store after invalidation")
 
 	a, err := ValidateToken(tokenDetails.Token)
-	assert.Equal(t, a, username, "should be user name")
-	assert.Nil(t, err, "Error should not be nil for a deleted token")
+	assert.Equal(t, a, "", "should be empty")
+	assert.NotNil(t, err, "Error should not be nil for a deleted token")
 }
 
 func TestTokenExpiry(t *testing.T) {
