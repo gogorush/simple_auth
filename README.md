@@ -1,0 +1,58 @@
+#Simple Authentication Service
+This project provides a simple authentication service using Go. It supports functionalities such as user creation, role management, and token-based authentication.
+
+##Structure
+The project is organized into the following structure:
+```
+├── Makefile
+├── README.md
+├── auth
+│   ├── handler.go - HTTP handlers for the authentication endpoints.
+│   ├── handler_test.go - Tests for the HTTP handlers.
+│   ├── model.go - Data models used in the authentication service.
+│   ├── service.go - Business logic for authentication and authorization.
+│   ├── service_test.go - Tests for the business logic.
+│   ├── tokens.go - JWT token generation, validation, and invalidation.
+│   └── tokens_test.go - Tests for JWT token functionalities.
+├── go.mod
+├── go.sum
+├── main.go - Entry point for the application.
+├── simple_auth
+└── utils
+    ├── concurrent_map.go - A thread-safe concurrent map implementation.
+    ├── concurrent_map_test.go - Tests for the concurrent map.
+    ├── hasher.go - Utility for hashing passwords.
+    └── hasher_test.go - Tests for the hashing utility.
+
+```
+
+##Getting Started
+###Prerequisites
+Install Go[].
+
+### Running the application
+Clone the repository:
+```
+git clone <repository-url>
+cd <repository-directory>
+
+```
+Build and run the application:
+```
+make build
+make run
+
+```
+Running the Tests
+```
+make test
+```
+
+### Features
+User registration and authentication.
+Role management (create, delete, assign).
+Token-based authentication using JWT.
+Thread-safe in-memory storage.
+
+### License
+This project is licensed under the MIT License.
