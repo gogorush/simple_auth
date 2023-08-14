@@ -15,7 +15,7 @@ var jwtKey = []byte("your-secret-key") // This should ideally be more secure and
 
 // GenerateToken generates a JWT for the given user
 func GenerateToken(username string) (TokenDetails, error) {
-    expirationTime := time.Now().Add(tokenDuration).Unix()
+	expirationTime := time.Now().Add(tokenDuration).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user": username,
 		"exp":  expirationTime,
@@ -30,11 +30,15 @@ func GenerateToken(username string) (TokenDetails, error) {
 
 // ValidateToken checks the given token's validity
 func ValidateToken(tokenString string) (string, error) {
+	_, ok := Tokens.Get(tokenString)
+	if !ok {
+		return "", errors.New("invalid token")
+	}
 	claims := jwt.MapClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
 		return jwtKey, nil
 	})
-    //fmt.Println(token, " hello ", err)
+	//fmt.Println(token, " hello ", err)
 
 	if err != nil {
 		return "", err
@@ -48,7 +52,7 @@ func ValidateToken(tokenString string) (string, error) {
 		return "", errors.New("invalid token claims exp")
 	}
 	if int64(exp) < time.Now().Unix() {
-        InvalidateToken(tokenString)
+		InvalidateToken(tokenString)
 		return "", errors.New("token expired here")
 	}
 
@@ -69,4 +73,3 @@ func InvalidateToken(tokenString string) {
 func setTokenDuration(duration time.Duration) {
 	tokenDuration = duration
 }
-

@@ -16,7 +16,7 @@ func main() {
 	http.HandleFunc("/create-role", auth.HandleCreateRole)
 	http.HandleFunc("/delete-role", auth.HandleDeleteRole)
 	http.HandleFunc("/add-role-to-user", auth.HandleAddRoleToUser)
-	http.HandleFunc("/generate-token", auth.HandleGenerateToken)
+	http.HandleFunc("/authenticate", auth.HandleAuthenticate)
 	http.HandleFunc("/invalidate-token", auth.HandleInvalidateToken)
 	http.HandleFunc("/check-role", auth.HandleCheckRole)
 	http.HandleFunc("/get-all-roles", auth.HandleGetAllRoles)
@@ -37,5 +37,6 @@ func main() {
 	}
 
 	log.Printf("Starting server on https://localhost%v", server.Addr)
-	log.Fatal(server.ListenAndServeTLS("", ""))
+	//log.Fatal(server.ListenAndServeTLS("", ""))
+	log.Fatal(server.ListenAndServe())
 }
