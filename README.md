@@ -3,15 +3,15 @@ This project provides a simple authentication service using Go. It supports func
 
 ## Table of Contents
 
-- [Project Structure](\#project-structure)
-- [Getting Started](\#getting-started)
-  - [Prerequisites](\#prerequisites)
-  - [Setup & Run](\#setup--run)
-  - [Testing](\#testing)
-- [Features](\#features)
-- [External Libraries](\#external-libraries)
-- [API Test Suite](\#api-test-suite)
-- [Known Issues & Considerations](\#known-issues--considerations)
+- [Project Structure](#project-structure)
+- [Getting Started](#getting-started)
+  - [Prerequisites](#prerequisites)
+  - [Setup & Run](#setup--run)
+  - [Testing](#testing)
+- [Features](#features)
+- [External Libraries](#external-libraries)
+- [API Test Suite](#api-test-suite)
+- [Known Issues & Considerations](#known-issues--considerations)
 - [License](#license)
 
 ## 📂 Structure
