@@ -3,14 +3,32 @@
 package main
 
 import (
-	//"crypto/tls"
+	"flag"
+	"fmt"
 	"log"
 	"net/http"
 
 	"github.com/gogorush/simple_auth/auth"
+	"github.com/gogorush/simple_auth/utils"
 )
 
+var (
+	fileConfig string // config file path
+)
+
+func init() {
+	flag.StringVar(&fileConfig, "f", "default.yml", "-f: config file path")
+}
+
 func main() {
+
+    flag.Parse()
+
+	utils.InitConfig(fileConfig)
+
+    fmt.Println(utils.GetConfig())
+    auth.JwtKey = []byte(utils.GetConfig().JwtKey)
+
 	http.HandleFunc("/create-user", auth.HandleCreateUser)
 	http.HandleFunc("/delete-user", auth.HandleDeleteUser)
 	http.HandleFunc("/create-role", auth.HandleCreateRole)
@@ -20,6 +38,7 @@ func main() {
 	http.HandleFunc("/invalidate-token", auth.HandleInvalidateToken)
 	http.HandleFunc("/check-role", auth.HandleCheckRole)
 	http.HandleFunc("/get-all-roles", auth.HandleGetAllRoles)
+
 
 	// Load the HTTPS certificate and key
 	//cert, err := tls.LoadX509KeyPair("cert.pem", "key.pem")
@@ -32,7 +51,7 @@ func main() {
 	//}
 
 	server := &http.Server{
-		Addr: ":8443",
+		Addr: utils.GetConfig().Address,
 		//TLSConfig: tlsConfig,
 	}
 

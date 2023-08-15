@@ -24,9 +24,9 @@ func NewJWTTokenService(jwtKey []byte, tokenDuration time.Duration) *JWTTokenSer
 	return &JWTTokenService{jwtKey: jwtKey, tokenDuration: tokenDuration}
 }
 
-var TokenDuration = 2 * time.Hour
+var TokenDuration time.Duration = 2 * time.Hour
 
-var JwtKey = []byte("your-secret-key") // This should ideally be more secure and not hardcoded
+var JwtKey []byte // This should ideally be more secure and not hardcoded
 
 // GenerateToken generates a JWT for the given user
 func (s *JWTTokenService) GenerateToken(username string) (TokenDetails, error) {

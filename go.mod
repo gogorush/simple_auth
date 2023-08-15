@@ -6,6 +6,7 @@ require (
 	github.com/golang-jwt/jwt/v5 v5.0.0
 	github.com/stretchr/testify v1.8.4
 	golang.org/x/crypto v0.12.0
+	gopkg.in/yaml.v2 v2.4.0
 )
 
 require (
