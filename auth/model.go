@@ -11,21 +11,15 @@ type User struct {
 }
 
 type Role struct {
-	Name    string
-	//Ability []string
-	//Status  bool
+	Name string
+    //Ability []string // TODO: give authorization to different apis?
+    //Status  bool // TODO: not a good idea to remove a role, marked should be better
 }
 
 type TokenDetails struct {
-    UserName string
+	UserName  string
 	Token     string
 	ExpiresAt int64
-}
-
-type UserTokenDetails struct {
-	Token     string
-	ExpiresAt int64
-    UserName string
 }
 
 var (

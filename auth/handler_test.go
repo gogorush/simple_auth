@@ -19,7 +19,10 @@ func setupService() {
 	Users = utils.NewConcurrentMap()
 	Roles = utils.NewConcurrentMap()
 	Tokens = utils.NewConcurrentMap()
-	service = &InMemoryAuthService{} // Reset to mock service for each test
+	service = &InMemoryAuthService{
+		//TokenSvc: NewJWTTokenService(JwtKey, TokenDuration),
+		TokenSvc: NewInMemoryTokenService(TokenDuration),
+	} // Reset to mock service for each test
 }
 
 func TestHandleCreateUser(t *testing.T) {
@@ -289,162 +292,161 @@ func TestHandleInvalidateToken(t *testing.T) {
 }
 
 func TestHandleCheckRole(t *testing.T) {
-    setupService()
+	setupService()
 
-    // Create a mock user
-    userReqBody := bytes.NewBufferString(`{"username":"testuser", "password":"testpass"}`)
-    userReq, err := http.NewRequest("POST", "/create-user", userReqBody)
-    if err != nil {
-        t.Fatal(err)
-    }
-    userRR := httptest.NewRecorder()
-    HandleCreateUser(userRR, userReq)
-    if status := userRR.Code; status != http.StatusCreated {
-        t.Fatalf("Failed to create mock user: got %v want %v", status, http.StatusCreated)
-    }
+	// Create a mock user
+	userReqBody := bytes.NewBufferString(`{"username":"testuser", "password":"testpass"}`)
+	userReq, err := http.NewRequest("POST", "/create-user", userReqBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	userRR := httptest.NewRecorder()
+	HandleCreateUser(userRR, userReq)
+	if status := userRR.Code; status != http.StatusCreated {
+		t.Fatalf("Failed to create mock user: got %v want %v", status, http.StatusCreated)
+	}
 
-    // Authenticate the user to get a token
-    authReqBody := bytes.NewBufferString(`{"username":"testuser", "password":"testpass"}`)
-    authReq, err := http.NewRequest("POST", "/authenticate", authReqBody)
-    if err != nil {
-        t.Fatal(err)
-    }
-    authRR := httptest.NewRecorder()
-    HandleAuthenticate(authRR, authReq)
-    if status := authRR.Code; status != http.StatusOK {
-        t.Fatalf("Failed to authenticate mock user: got %v want %v", status, http.StatusOK)
-    }
-    var tokenDetails TokenDetails
-    err = json.NewDecoder(authRR.Body).Decode(&tokenDetails)
-    if err != nil {
-        t.Fatalf("Failed to decode authentication response: %v", err)
-    }
+	// Authenticate the user to get a token
+	authReqBody := bytes.NewBufferString(`{"username":"testuser", "password":"testpass"}`)
+	authReq, err := http.NewRequest("POST", "/authenticate", authReqBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	authRR := httptest.NewRecorder()
+	HandleAuthenticate(authRR, authReq)
+	if status := authRR.Code; status != http.StatusOK {
+		t.Fatalf("Failed to authenticate mock user: got %v want %v", status, http.StatusOK)
+	}
+	var tokenDetails TokenDetails
+	err = json.NewDecoder(authRR.Body).Decode(&tokenDetails)
+	if err != nil {
+		t.Fatalf("Failed to decode authentication response: %v", err)
+	}
 
-    // Create a mock role
-    roleReqBody := bytes.NewBufferString(`{"roleName":"testrole"}`)
-    roleReq, err := http.NewRequest("POST", "/create-role", roleReqBody)
-    if err != nil {
-        t.Fatal(err)
-    }
-    roleRR := httptest.NewRecorder()
-    HandleCreateRole(roleRR, roleReq)
-    if status := roleRR.Code; status != http.StatusCreated {
-        t.Fatalf("Failed to create mock role: got %v want %v", status, http.StatusCreated)
-    }
+	// Create a mock role
+	roleReqBody := bytes.NewBufferString(`{"roleName":"testrole"}`)
+	roleReq, err := http.NewRequest("POST", "/create-role", roleReqBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	roleRR := httptest.NewRecorder()
+	HandleCreateRole(roleRR, roleReq)
+	if status := roleRR.Code; status != http.StatusCreated {
+		t.Fatalf("Failed to create mock role: got %v want %v", status, http.StatusCreated)
+	}
 
-    // Assign role to user
-    assignReqBody := bytes.NewBufferString(`{"username":"testuser", "roleName":"testrole"}`)
-    assignReq, err := http.NewRequest("POST", "/add-role", assignReqBody)
-    if err != nil {
-        t.Fatal(err)
-    }
-    assignRR := httptest.NewRecorder()
-    HandleAddRoleToUser(assignRR, assignReq)
-    if status := assignRR.Code; status != http.StatusCreated {
-        t.Fatalf("Failed to assign role to user: got %v want %v", status, http.StatusCreated)
-    }
+	// Assign role to user
+	assignReqBody := bytes.NewBufferString(`{"username":"testuser", "roleName":"testrole"}`)
+	assignReq, err := http.NewRequest("POST", "/add-role", assignReqBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	assignRR := httptest.NewRecorder()
+	HandleAddRoleToUser(assignRR, assignReq)
+	if status := assignRR.Code; status != http.StatusCreated {
+		t.Fatalf("Failed to assign role to user: got %v want %v", status, http.StatusCreated)
+	}
 
-    //fmt.Println(tokenDetails)
-    // Test checking role for user using the token
-    checkReqBody := bytes.NewBufferString(`{"token":"` + tokenDetails.Token + `", "roleName":"testrole"}`)
-    checkReq, err := http.NewRequest("POST", "/check-role", checkReqBody)
-    if err != nil {
-        t.Fatal(err)
-    }
-    checkRR := httptest.NewRecorder()
-    HandleCheckRole(checkRR, checkReq)
-    if status := checkRR.Code; status != http.StatusOK {
-        t.Errorf("Handler returned wrong status code: got %v want %v", status, http.StatusOK)
-    }
+	//fmt.Println(tokenDetails)
+	// Test checking role for user using the token
+	checkReqBody := bytes.NewBufferString(`{"token":"` + tokenDetails.Token + `", "roleName":"testrole"}`)
+	checkReq, err := http.NewRequest("POST", "/check-role", checkReqBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	checkRR := httptest.NewRecorder()
+	HandleCheckRole(checkRR, checkReq)
+	if status := checkRR.Code; status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
 
-    var roleCheck map[string]bool
-    err = json.NewDecoder(checkRR.Body).Decode(&roleCheck)
-    if err != nil {
-        t.Fatal("Failed decoding response body")
-    }
-    if !roleCheck["hasRole"] {
-        t.Errorf("Expected user to have role but they did not")
-    }
+	var roleCheck map[string]bool
+	err = json.NewDecoder(checkRR.Body).Decode(&roleCheck)
+	if err != nil {
+		t.Fatal("Failed decoding response body")
+	}
+	if !roleCheck["hasRole"] {
+		t.Errorf("Expected user to have role but they did not")
+	}
 }
 
 func TestHandleGetAllRoles(t *testing.T) {
-    setupService()
+	setupService()
 
-    // Create a mock user
-    userReqBody := bytes.NewBufferString(`{"username":"testuser", "password":"testpass"}`)
-    userReq, err := http.NewRequest("POST", "/create-user", userReqBody)
-    if err != nil {
-        t.Fatal(err)
-    }
-    userRR := httptest.NewRecorder()
-    HandleCreateUser(userRR, userReq)
-    if status := userRR.Code; status != http.StatusCreated {
-        t.Fatalf("Failed to create mock user: got %v want %v", status, http.StatusCreated)
-    }
+	// Create a mock user
+	userReqBody := bytes.NewBufferString(`{"username":"testuser", "password":"testpass"}`)
+	userReq, err := http.NewRequest("POST", "/create-user", userReqBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	userRR := httptest.NewRecorder()
+	HandleCreateUser(userRR, userReq)
+	if status := userRR.Code; status != http.StatusCreated {
+		t.Fatalf("Failed to create mock user: got %v want %v", status, http.StatusCreated)
+	}
 
-    // Authenticate the user to get a token
-    authReqBody := bytes.NewBufferString(`{"username":"testuser", "password":"testpass"}`)
-    authReq, err := http.NewRequest("POST", "/authenticate", authReqBody)
-    if err != nil {
-        t.Fatal(err)
-    }
-    authRR := httptest.NewRecorder()
-    HandleAuthenticate(authRR, authReq)
-    if status := authRR.Code; status != http.StatusOK {
-        t.Fatalf("Failed to authenticate mock user: got %v want %v", status, http.StatusOK)
-    }
-    var tokenDetails TokenDetails
-    err = json.NewDecoder(authRR.Body).Decode(&tokenDetails)
-    if err != nil {
-        t.Fatalf("Failed to decode authentication response: %v", err)
-    }
+	// Authenticate the user to get a token
+	authReqBody := bytes.NewBufferString(`{"username":"testuser", "password":"testpass"}`)
+	authReq, err := http.NewRequest("POST", "/authenticate", authReqBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	authRR := httptest.NewRecorder()
+	HandleAuthenticate(authRR, authReq)
+	if status := authRR.Code; status != http.StatusOK {
+		t.Fatalf("Failed to authenticate mock user: got %v want %v", status, http.StatusOK)
+	}
+	var tokenDetails TokenDetails
+	err = json.NewDecoder(authRR.Body).Decode(&tokenDetails)
+	if err != nil {
+		t.Fatalf("Failed to decode authentication response: %v", err)
+	}
 
-    // Create some roles for testing and assign them to the user
-    roleNames := []string{"role1", "role2", "role3"}
-    for _, roleName := range roleNames {
-        roleReqBody := bytes.NewBufferString(`{"roleName":"` + roleName + `"}`)
-        roleReq, err := http.NewRequest("POST", "/create-role", roleReqBody)
-        if err != nil {
-            t.Fatal(err)
-        }
-        roleRR := httptest.NewRecorder()
-        HandleCreateRole(roleRR, roleReq)
-        if status := roleRR.Code; status != http.StatusCreated {
-            t.Fatalf("Failed to create role %s: got %v want %v", roleName, status, http.StatusCreated)
-        }
+	// Create some roles for testing and assign them to the user
+	roleNames := []string{"role1", "role2", "role3"}
+	for _, roleName := range roleNames {
+		roleReqBody := bytes.NewBufferString(`{"roleName":"` + roleName + `"}`)
+		roleReq, err := http.NewRequest("POST", "/create-role", roleReqBody)
+		if err != nil {
+			t.Fatal(err)
+		}
+		roleRR := httptest.NewRecorder()
+		HandleCreateRole(roleRR, roleReq)
+		if status := roleRR.Code; status != http.StatusCreated {
+			t.Fatalf("Failed to create role %s: got %v want %v", roleName, status, http.StatusCreated)
+		}
 
-        // Assign role to user
-        assignReqBody := bytes.NewBufferString(`{"username":"testuser", "roleName":"` + roleName + `"}`)
-        assignReq, err := http.NewRequest("POST", "/add-role", assignReqBody)
-        if err != nil {
-            t.Fatal(err)
-        }
-        assignRR := httptest.NewRecorder()
-        HandleAddRoleToUser(assignRR, assignReq)
-        if status := assignRR.Code; status != http.StatusCreated {
-            t.Fatalf("Failed to assign role %s to user: got %v want %v", roleName, status, http.StatusCreated)
-        }
-    }
+		// Assign role to user
+		assignReqBody := bytes.NewBufferString(`{"username":"testuser", "roleName":"` + roleName + `"}`)
+		assignReq, err := http.NewRequest("POST", "/add-role", assignReqBody)
+		if err != nil {
+			t.Fatal(err)
+		}
+		assignRR := httptest.NewRecorder()
+		HandleAddRoleToUser(assignRR, assignReq)
+		if status := assignRR.Code; status != http.StatusCreated {
+			t.Fatalf("Failed to assign role %s to user: got %v want %v", roleName, status, http.StatusCreated)
+		}
+	}
 
-    // Test getting all roles using the obtained token
-    reqBody := bytes.NewBufferString(`{"token":"` + tokenDetails.Token + `"}`)
-    req, err := http.NewRequest("POST", "/get-all-roles", reqBody)
-    if err != nil {
-        t.Fatal(err)
-    }
-    rr := httptest.NewRecorder()
-    HandleGetAllRoles(rr, req)
-    if status := rr.Code; status != http.StatusOK {
-        t.Errorf("Handler returned wrong status code: got %v want %v", status, http.StatusOK)
-    }
+	// Test getting all roles using the obtained token
+	reqBody := bytes.NewBufferString(`{"token":"` + tokenDetails.Token + `"}`)
+	req, err := http.NewRequest("POST", "/get-all-roles", reqBody)
+	if err != nil {
+		t.Fatal(err)
+	}
+	rr := httptest.NewRecorder()
+	HandleGetAllRoles(rr, req)
+	if status := rr.Code; status != http.StatusOK {
+		t.Errorf("Handler returned wrong status code: got %v want %v", status, http.StatusOK)
+	}
 
-    var roles []Role
-    err = json.NewDecoder(rr.Body).Decode(&roles)
-    if err != nil {
-        t.Fatal("Failed decoding response body")
-    }
-    if len(roles) != len(roleNames) {
-        t.Errorf("Expected %d roles but got %d", len(roleNames), len(roles))
-    }
+	var roles []Role
+	err = json.NewDecoder(rr.Body).Decode(&roles)
+	if err != nil {
+		t.Fatal("Failed decoding response body")
+	}
+	if len(roles) != len(roleNames) {
+		t.Errorf("Expected %d roles but got %d", len(roleNames), len(roles))
+	}
 }
-

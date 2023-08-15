@@ -1,5 +1,3 @@
-// auth/tokens_test.go
-
 package auth
 
 import (
@@ -9,9 +7,10 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestGenerateToken(t *testing.T) {
+func TestJWTGenerateToken(t *testing.T) {
+	service := NewJWTTokenService(JwtKey, TokenDuration)
 	username := "testuser"
-	tokenDetails, err := GenerateToken(username)
+	tokenDetails, err := service.GenerateToken(username)
 
 	assert.Nil(t, err, "Error should be nil")
 	assert.NotEmpty(t, tokenDetails.Token, "Token should not be empty")
@@ -22,47 +21,60 @@ func TestGenerateToken(t *testing.T) {
 	assert.True(t, exists, "Token should exist in the store")
 }
 
-func TestValidateToken(t *testing.T) {
+func TestJWTValidateToken(t *testing.T) {
+	service := NewJWTTokenService(JwtKey, TokenDuration)
 	username := "testuser2"
-	tokenDetails, _ := GenerateToken(username)
+	tokenDetails, _ := service.GenerateToken(username)
 
-	retrievedUsername, err := ValidateToken(tokenDetails.Token)
+	retrievedUsername, err := service.ValidateToken(tokenDetails.Token)
 
 	assert.Nil(t, err, "Error should be nil")
 	assert.Equal(t, username, retrievedUsername, "Usernames should match")
 
 	// Check for invalid token
-	_, err = ValidateToken("invalidtoken")
+	_, err = service.ValidateToken("invalidtoken")
 	assert.NotNil(t, err, "Error should not be nil for an invalid token")
 }
 
-func TestInvalidateToken(t *testing.T) {
+func TestJWTInvalidateToken(t *testing.T) {
+	service := NewJWTTokenService(JwtKey, TokenDuration)
 	username := "testuser3"
-	tokenDetails, _ := GenerateToken(username)
+	tokenDetails, _ := service.GenerateToken(username)
 
 	// Invalidate the token
-	InvalidateToken(tokenDetails.Token)
+	service.InvalidateToken(tokenDetails.Token)
 
 	_, exists := Tokens.Get(tokenDetails.Token)
 	assert.False(t, exists, "Token should not exist in the store after invalidation")
 
-	a, err := ValidateToken(tokenDetails.Token)
+	a, err := service.ValidateToken(tokenDetails.Token)
 	assert.Equal(t, a, "", "should be empty")
 	assert.NotNil(t, err, "Error should not be nil for a deleted token")
 }
 
-func TestTokenExpiry(t *testing.T) {
-	// Set token duration to 2 seconds for this test
-	setTokenDuration(2 * time.Second)
+func TestInMemoryTokenService(t *testing.T) {
+	service := NewInMemoryTokenService(2 * time.Second)
 
-	username := "testuserExpiry"
-	tokenDetails, _ := GenerateToken(username)
+	username := "testMemoryUser"
+	tokenDetails, err := service.GenerateToken(username)
+	assert.Nil(t, err, "Error should be nil")
+	assert.NotEmpty(t, tokenDetails.Token, "Token should not be empty")
 
-	// Wait for 3 seconds to ensure the token expires
+	// Validate token
+	retrievedUsername, err := service.ValidateToken(tokenDetails.Token)
+	assert.Nil(t, err, "Error should be nil")
+	assert.Equal(t, username, retrievedUsername, "Usernames should match")
+
+	// Wait for token to expire
 	time.Sleep(3 * time.Second)
 
-	_, err := ValidateToken(tokenDetails.Token)
+	// Validate expired token
+	_, err = service.ValidateToken(tokenDetails.Token)
+	assert.NotNil(t, err, "Expected error for expired token")
 
-	assert.NotNil(t, err, "Error should not be nil for an expired token")
-	assert.Equal(t, "token has invalid claims: token is expired", err.Error(), "Expected token expired error")
+	// Invalidate the token
+	service.InvalidateToken(tokenDetails.Token)
+	_, err = service.ValidateToken(tokenDetails.Token)
+	assert.NotNil(t, err, "Expected error for invalidated token")
 }
+

@@ -5,8 +5,8 @@ package auth
 import (
 	"testing"
 
-	"github.com/stretchr/testify/assert"
 	"github.com/gogorush/simple_auth/utils"
+	"github.com/stretchr/testify/assert"
 )
 
 var authService AuthService = &InMemoryAuthService{}
@@ -17,11 +17,14 @@ func setup() {
 	Users = utils.NewConcurrentMap()
 	Roles = utils.NewConcurrentMap()
 	Tokens = utils.NewConcurrentMap()
-	authService = &InMemoryAuthService{} // Reset to mock service for each test
+	authService = &InMemoryAuthService{
+		//TokenSvc: NewJWTTokenService(JwtKey, TokenDuration),
+		TokenSvc: NewInMemoryTokenService(TokenDuration),
+	} // Reset to mock service for each test
 }
 
 func TestCreateUser(t *testing.T) {
-    setup()
+	setup()
 	err := authService.CreateUser("testuser1", "password123")
 
 	assert.Nil(t, err, "Error should be nil")
@@ -32,7 +35,7 @@ func TestCreateUser(t *testing.T) {
 }
 
 func TestDeleteUser(t *testing.T) {
-    setup()
+	setup()
 	authService.CreateUser("userToDelete", "password123")
 
 	err := authService.DeleteUser("userToDelete")
@@ -44,7 +47,7 @@ func TestDeleteUser(t *testing.T) {
 }
 
 func TestCreateRole(t *testing.T) {
-    setup()
+	setup()
 	err := authService.CreateRole("testRole")
 	assert.Nil(t, err, "Error should be nil")
 
@@ -54,7 +57,7 @@ func TestCreateRole(t *testing.T) {
 }
 
 func TestDeleteRole(t *testing.T) {
-    setup()
+	setup()
 	authService.CreateRole("roleToDelete")
 
 	err := authService.DeleteRole("roleToDelete")
@@ -66,7 +69,7 @@ func TestDeleteRole(t *testing.T) {
 }
 
 func TestAddRoleToUser(t *testing.T) {
-    setup()
+	setup()
 	authService.CreateUser("userForRole", "password123")
 	authService.CreateRole("roleToAdd")
 
@@ -82,7 +85,7 @@ func TestAddRoleToUser(t *testing.T) {
 }
 
 func TestAuthenticate(t *testing.T) {
-    setup()
+	setup()
 	authService.CreateUser("userToAuth", "password123")
 
 	_, err := authService.Authenticate("userToAuth", "password123")
@@ -93,10 +96,10 @@ func TestAuthenticate(t *testing.T) {
 }
 
 func TestCheckUserRole(t *testing.T) {
-    setup()
+	setup()
 	authService.CreateUser("userForRoleCheck", "password123")
 	authService.CreateRole("roleToCheck")
-    //authService.AddRoleToUser("userForRoleCheck", "roleToCheck")
+	//authService.AddRoleToUser("userForRoleCheck", "roleToCheck")
 	tokenDetails, _ := authService.Authenticate("userForRoleCheck", "password123")
 
 	hasRole, err := authService.CheckUserRole(tokenDetails.Token, "roleToCheck")
@@ -114,7 +117,7 @@ func TestCheckUserRole(t *testing.T) {
 }
 
 func TestGetAllRoles(t *testing.T) {
-    setup()
+	setup()
 	authService.CreateUser("userForGetAllRoles", "password123")
 	authService.CreateRole("role1")
 	authService.CreateRole("role2")
