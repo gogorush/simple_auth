@@ -1,5 +1,5 @@
 # Simple Authsientication Service
-This is a version with my own understandings
+**This is a version with my own understandings, the test code is not fully covered**.
 
 This project provides a simple authentication service using Go. It supports functionalities such as user creation, role management, and token-based authentication.
 
