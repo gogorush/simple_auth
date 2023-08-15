@@ -22,23 +22,29 @@ func init() {
 
 func main() {
 
-    flag.Parse()
+	flag.Parse()
 
 	utils.InitConfig(fileConfig)
 
-    fmt.Println(utils.GetConfig())
-    auth.JwtKey = []byte(utils.GetConfig().JwtKey)
+	fmt.Println(utils.GetConfig())
+	auth.JwtKey = []byte(utils.GetConfig().JwtKey)
 
-	http.HandleFunc("/create-user", auth.HandleCreateUser)
-	http.HandleFunc("/delete-user", auth.HandleDeleteUser)
-	http.HandleFunc("/create-role", auth.HandleCreateRole)
-	http.HandleFunc("/delete-role", auth.HandleDeleteRole)
-	http.HandleFunc("/add-role-to-user", auth.HandleAddRoleToUser)
+	auth.InitAdmin(
+		auth.User{
+			Username: utils.GetConfig().Admin.UserName,
+			Password: utils.GetConfig().Admin.Password,
+		},
+	)
+
+	http.HandleFunc("/create-user", auth.VerifyMethod(auth.HandleCreateUser))
+	http.HandleFunc("/delete-user", auth.VerifyMethod(auth.HandleDeleteUser))
+	http.HandleFunc("/create-role", auth.VerifyMethod(auth.HandleCreateRole))
+	http.HandleFunc("/delete-role", auth.VerifyMethod(auth.HandleDeleteRole))
+	http.HandleFunc("/add-role-to-user", auth.VerifyMethod(auth.HandleAddRoleToUser))
 	http.HandleFunc("/authenticate", auth.HandleAuthenticate)
 	http.HandleFunc("/invalidate-token", auth.HandleInvalidateToken)
-	http.HandleFunc("/check-role", auth.HandleCheckRole)
-	http.HandleFunc("/get-all-roles", auth.HandleGetAllRoles)
-
+	http.HandleFunc("/check-role", auth.VerifyMethod(auth.HandleCheckRole))
+	http.HandleFunc("/get-all-roles", auth.VerifyMethod(auth.HandleGetAllRoles))
 
 	// Load the HTTPS certificate and key
 	//cert, err := tls.LoadX509KeyPair("cert.pem", "key.pem")

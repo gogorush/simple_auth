@@ -1,2 +1,5 @@
 Address: ":8443"
 JwtKey: "your-secret-key"
+Admin:
+ username: "admin"
+ password: "pass"

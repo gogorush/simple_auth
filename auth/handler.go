@@ -4,12 +4,13 @@ package auth
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 )
 
 var service AuthService = &InMemoryAuthService{
-    //TokenSvc: NewJWTTokenService(JwtKey, TokenDuration),
-    TokenSvc: NewInMemoryTokenService(TokenDuration),
+	//TokenSvc: NewJWTTokenService(JwtKey, TokenDuration),
+	TokenSvc: NewInMemoryTokenService(TokenDuration),
 } // Create an instance of the AuthService
 
 type UserRequest struct {
@@ -17,25 +18,20 @@ type UserRequest struct {
 	Password string `json:"password,omitempty"`
 	RoleName string `json:"roleName,omitempty"`
 	Token    string `json:"token,omitempty"`
-}
-
-func ensureMethod(next http.HandlerFunc, method string) http.HandlerFunc {
-	return func(w http.ResponseWriter, r *http.Request) {
-		if r.Method != method {
-			http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-			return
-		}
-		next.ServeHTTP(w, r)
-	}
+	Ability  string `json:"ability,omitempty"`
 }
 
 func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
-	var requestData UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+	ctxData := r.Context().Value("requestData")
+	if ctxData == nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
-
+	requestData, ok := ctxData.(UserRequest)
+	if !ok {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
 	err := service.CreateUser(requestData.Username, requestData.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -46,8 +42,13 @@ func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
-	var requestData UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+	ctxData := r.Context().Value("requestData")
+	if ctxData == nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	requestData, ok := ctxData.(UserRequest)
+	if !ok {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
@@ -62,13 +63,18 @@ func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleCreateRole(w http.ResponseWriter, r *http.Request) {
-	var requestData UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+	ctxData := r.Context().Value("requestData")
+	if ctxData == nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	requestData, ok := ctxData.(UserRequest)
+	if !ok {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
-	err := service.CreateRole(requestData.RoleName)
+	err := service.CreateRole(requestData.RoleName, requestData.Ability)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return
@@ -78,8 +84,13 @@ func HandleCreateRole(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleDeleteRole(w http.ResponseWriter, r *http.Request) {
-	var requestData UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+	ctxData := r.Context().Value("requestData")
+	if ctxData == nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	requestData, ok := ctxData.(UserRequest)
+	if !ok {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
@@ -94,8 +105,13 @@ func HandleDeleteRole(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleAddRoleToUser(w http.ResponseWriter, r *http.Request) {
-	var requestData UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+	ctxData := r.Context().Value("requestData")
+	if ctxData == nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	requestData, ok := ctxData.(UserRequest)
+	if !ok {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
@@ -153,8 +169,13 @@ func HandleInvalidateToken(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleCheckRole(w http.ResponseWriter, r *http.Request) {
-	var requestData UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+	ctxData := r.Context().Value("requestData")
+	if ctxData == nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	requestData, ok := ctxData.(UserRequest)
+	if !ok {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
@@ -173,13 +194,20 @@ func HandleCheckRole(w http.ResponseWriter, r *http.Request) {
 }
 
 func HandleGetAllRoles(w http.ResponseWriter, r *http.Request) {
-	var requestData UserRequest
-	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
+	ctxData := r.Context().Value("requestData")
+	if ctxData == nil {
+		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	requestData, ok := ctxData.(UserRequest)
+	if !ok {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
 
+    fmt.Println("requestData", requestData)
 	roles, err := service.GetAllRoles(requestData.Token)
+    fmt.Println("HandleGetAllRoles: ", roles, err)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
 		return

@@ -31,6 +31,12 @@ func ReadConfig(configFile string, conf interface{}) error {
 type FileConfig struct {
 	Address string `yaml:"Address,omitempty"`
 	JwtKey  string `yaml:"JwtKey,omitempty"`
+	Admin   Admin  `yaml:"Admin,omitempty"`
+}
+
+type Admin struct {
+	UserName string `yaml:"username,omitempty"`
+	Password string `yaml:"password,omitempty"`
 }
 
 // InitConfig : get a new Config struct.

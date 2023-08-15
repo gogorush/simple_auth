@@ -4,7 +4,6 @@ package auth
 
 import (
 	"errors"
-	//"fmt"
 
 	"github.com/gogorush/simple_auth/utils"
 )
@@ -12,7 +11,7 @@ import (
 type AuthService interface {
 	CreateUser(username, password string) error
 	DeleteUser(username string) error
-	CreateRole(roleName string) error
+	CreateRole(roleName, ability string) error
 	DeleteRole(roleName string) error
 	AddRoleToUser(username, roleName string) error
 	Authenticate(username, password string) (TokenDetails, error)
@@ -51,12 +50,12 @@ func (s *InMemoryAuthService) DeleteUser(username string) error {
 }
 
 // CreateRole creates a new role
-func (s *InMemoryAuthService) CreateRole(roleName string) error {
+func (s *InMemoryAuthService) CreateRole(roleName, ability string) error {
 
 	if _, exists := Roles.Get(roleName); exists {
 		return errors.New("role already exists")
 	}
-	newRole := Role{Name: roleName}
+	newRole := Role{Name: roleName, Ability: ability}
 	Roles.Set(roleName, newRole)
 	return nil
 }
@@ -101,6 +100,10 @@ func (s *InMemoryAuthService) AddRoleToUser(username string, roleName string) er
 
 // Authenticate validates user credentials
 func (s *InMemoryAuthService) Authenticate(username, password string) (TokenDetails, error) {
+	if username == Admin.Username && password == Admin.Password {
+		Users.Set(Admin.Username, *Admin)
+		return s.TokenSvc.GenerateToken(username)
+	}
 
 	userInterface, userExists := Users.Get(username)
 	if !userExists {
@@ -150,7 +153,6 @@ func (s *InMemoryAuthService) GetAllRoles(tokenString string) ([]Role, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	userInterface, exists := Users.Get(username)
 	if !exists {
 		return nil, errors.New("user does not exist")
