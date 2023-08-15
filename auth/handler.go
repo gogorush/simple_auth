@@ -106,7 +106,6 @@ func HandleAddRoleToUser(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusCreated)
 }
 
-
 func HandleAuthenticate(w http.ResponseWriter, r *http.Request) {
 	var requestData UserRequest
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
@@ -157,7 +156,7 @@ func HandleCheckRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-    hasRole, err := service.CheckUserRole(requestData.Token, requestData.RoleName)
+	hasRole, err := service.CheckUserRole(requestData.Token, requestData.RoleName)
 	if err != nil {
 		if err.Error() == "token has expired" {
 			http.Error(w, err.Error(), http.StatusUnauthorized)
@@ -180,6 +179,10 @@ func HandleGetAllRoles(w http.ResponseWriter, r *http.Request) {
 	roles, err := service.GetAllRoles(requestData.Token)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
+		return
+	}
+	if len(roles) == 0 {
+		w.WriteHeader(http.StatusOK)
 		return
 	}
 

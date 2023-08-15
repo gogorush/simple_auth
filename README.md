@@ -55,5 +55,9 @@ make test
 ### External libs used
 - golang-jwt
 
+### Issues
+- role with actual meanful use case? (only some user could create-user,  some could delte roles)
+- delete role (this could lead to an break, user still have the role)
+
 ### License
 This project is licensed under the MIT License.

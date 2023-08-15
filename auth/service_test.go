@@ -76,6 +76,9 @@ func TestAddRoleToUser(t *testing.T) {
 	// Attempting to add the role again should not return an error (idempotent operation)
 	err = authService.AddRoleToUser("userForRole", "roleToAdd")
 	assert.Nil(t, err, "Error should be nil")
+
+	err = authService.AddRoleToUser("userForRole", "notExistRole")
+	assert.NotNil(t, err, "Error should not be nil")
 }
 
 func TestAuthenticate(t *testing.T) {
@@ -104,6 +107,10 @@ func TestCheckUserRole(t *testing.T) {
 	hasRole, err = authService.CheckUserRole(tokenDetails.Token, "roleToCheck")
 	assert.Nil(t, err, "Error should be nil")
 	assert.True(t, hasRole, "User should have the role")
+
+	hasRole, err = authService.CheckUserRole(tokenDetails.Token, "notExistRole")
+	assert.NotNil(t, err, "Error should be nil")
+	assert.False(t, hasRole, "User should not have the role")
 }
 
 func TestGetAllRoles(t *testing.T) {

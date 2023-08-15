@@ -11,7 +11,9 @@ type User struct {
 }
 
 type Role struct {
-	Name string
+	Name    string
+	//Ability []string
+	//Status  bool
 }
 
 type TokenDetails struct {
@@ -24,4 +26,3 @@ var (
 	Roles  = utils.NewConcurrentMap()
 	Tokens = utils.NewConcurrentMap()
 )
-

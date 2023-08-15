@@ -61,7 +61,6 @@ func (s *InMemoryAuthService) CreateRole(roleName string) error {
 
 // DeleteRole deletes an existing role
 func (s *InMemoryAuthService) DeleteRole(roleName string) error {
-
 	if _, exists := Roles.Get(roleName); !exists {
 		return errors.New("role does not exist")
 	}
@@ -78,11 +77,15 @@ func (s *InMemoryAuthService) AddRoleToUser(username string, roleName string) er
 	}
 	user := userInterface.(User) // type assertion
 
+	// check if role exits
 	roleInterface, roleExists := Roles.Get(roleName)
 	if !roleExists {
 		return errors.New("role does not exist")
 	}
-	role := roleInterface.(Role) // type assertion
+	role, ok := roleInterface.(Role) // type assertion
+	if !ok {
+		return errors.New("type assertion failed: not a Role")
+	}
 
 	for _, r := range user.Roles {
 		if r.Name == roleName {
@@ -121,6 +124,13 @@ func (s *InMemoryAuthService) CheckUserRole(tokenString, roleName string) (bool,
 	if !exists {
 		return false, errors.New("user does not exist")
 	}
+
+	_, exists = Roles.Get(roleName)
+	// check if role exists
+	if !exists {
+		return false, errors.New("role does not exist")
+	}
+
 	user := userInterface.(User) // type assertion
 
 	for _, role := range user.Roles {
@@ -145,5 +155,13 @@ func (s *InMemoryAuthService) GetAllRoles(tokenString string) ([]Role, error) {
 	}
 	user := userInterface.(User) // type assertion
 
-	return user.Roles, nil
+	// check if role exists
+	var roles []Role
+	for _, role := range user.Roles {
+		_, exists := Roles.Get(role.Name)
+		if exists {
+			roles = append(roles, role)
+		}
+	}
+	return roles, nil
 }
