@@ -1,7 +1,20 @@
 # Simple Authentication Service
 This project provides a simple authentication service using Go. It supports functionalities such as user creation, role management, and token-based authentication.
 
-## Structure
+## Table of Contents
+
+- [Project Structure](\#project-structure)
+- [Getting Started](\#getting-started)
+  - [Prerequisites](\#prerequisites)
+  - [Setup & Run](\#setup--run)
+  - [Testing](\#testing)
+- [Features](\#features)
+- [External Libraries](\#external-libraries)
+- [API Test Suite](\#api-test-suite)
+- [Known Issues & Considerations](\#known-issues--considerations)
+- [License](#license)
+
+## 📂 Structure
 The project is organized into the following structure:
 ```
 ├── Makefile
@@ -25,15 +38,15 @@ The project is organized into the following structure:
     └── hasher_test.go - Tests for the hashing utility.
 
 ```
+## 🚀 Getting Started
 
-## Getting Started
 ### Prerequisites
 Install Go[https://go.dev/].
 
-### Running the application
+### Setup & Run
 Clone the repository:
 ```
-git clone <repository-url>
+git clone <repository-url> (or download the zip file from github)
 cd <repository-directory>
 ```
 Build and run the application:
@@ -41,25 +54,32 @@ Build and run the application:
 make build
 make run
 ```
-Running the Tests
+
+### 🔍 Testing
+
+Run the test suite with:
 ```
 make test
 ```
 
-### Features
-- User registration and authentication.
-- Role management (create, delete, assign?).
-- Token-based authentication using JWT.
-- Thread-safe in-memory storage.
+### ✨ Features
+- **User Management:** Register and authenticate users.
+- **Role Management:** Create, delete, and assign roles to users.
+- **Authentication:** Secure endpoints with JWT token-based authentication.
+- **Storage:** Utilizes thread-safe in-memory storage.
 
-### External libs used
-- golang-jwt
+### 📚 External libs used
+- [golang-jwt](https://github.com/golang-jwt/jwt)
 
-### Issues
-- role with actual meanful use case? (only some user could create-user,  some could delte roles)
-- delete role (this could lead to an break, user still have the role) api description is not clear
-- http or https server? Not defined, should be use nginx like proxy for https?
-- While using JWTs for authentication was my original idea, storing these tokens in memory presents challenges, especially when dealing with multiple services. While an in-memory database like Redis can be used for this purpose, it introduces additional costs. 
+### 🧪 API Test Suit
+Use the \`simple_auth_api.json\` Postman collection for testing all API endpoints. Just import it into Postman, and you're ready to go!
 
-### License
+
+### 🚧 Issues
+- **Role Functionality:** The actual use-case for roles (e.g., only certain roles can create users) isn't clear.
+- **Role Deletion:** Removing roles can lead to inconsistencies, especially if users still possess the deleted role.
+- **Server Type:** There's no clear distinction between HTTP and HTTPS. Consider using a proxy like nginx for HTTPS.
+- **Token Storage:** While JWTs are efficient for authentication, storing them in memory isn't scalable. Although Redis can be a solution, it adds extra overhead.
+
+### 📜 License
 This project is licensed under the MIT License.
