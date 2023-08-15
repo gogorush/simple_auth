@@ -1,0 +1,195 @@
+{
+	"info": {
+		"_postman_id": "326a5265-e1b0-4daf-858a-71f70159b9b9",
+		"name": "local",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
+		"_exporter_id": "6002683"
+	},
+	"item": [
+		{
+			"name": "create-user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test1\",\n    \"password\": \"pass\"\n}"
+				},
+				"url": "http://localhost:8443/create-user"
+			},
+			"response": []
+		},
+		{
+			"name": "create-user Copy",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test2\",\n    \"password\": \"pass\",\n    \"token\": \"oHM3AFbRMZYYR92O6HmmiuleeNFHiWQ7pIFMs9mx7Bs=\"\n}"
+				},
+				"url": "http://localhost:8443/create-user"
+			},
+			"response": []
+		},
+		{
+			"name": "delete-user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"\n}"
+				},
+				"url": "http://localhost:8443/delete-user"
+			},
+			"response": []
+		},
+		{
+			"name": "create-role",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"roleName\": \"role1\"\n}"
+				},
+				"url": "http://localhost:8443/create-role"
+			},
+			"response": []
+		},
+		{
+			"name": "create-role Copy",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"roleName\": \"role2\",\n    \"ability\": \"create_user,get_all_roles,delete_user,create_role,delete_role,check_role,add_role_to_user\",\n    \"token\": \"LVHgcFPunzz6PpEePlQkwt8inOAWIoykNkNDOq6mHRE=\"\n}"
+				},
+				"url": "http://localhost:8443/create-role"
+			},
+			"response": []
+		},
+		{
+			"name": "delete rool",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"roleName\": \"role1\"\n}"
+				},
+				"url": "http://localhost:8443/delete-role"
+			},
+			"response": []
+		},
+		{
+			"name": "add-role-to-user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test2\",\n    \"roleName\": \"role1\"\n}"
+				},
+				"url": "http://localhost:8443/add-role-to-user"
+			},
+			"response": []
+		},
+		{
+			"name": "add-role-to-user Copy",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test1\",\n    \"roleName\": \"role1\",\n    \"token\": \"LVHgcFPunzz6PpEePlQkwt8inOAWIoykNkNDOq6mHRE=\"\n}"
+				},
+				"url": "http://localhost:8443/add-role-to-user"
+			},
+			"response": []
+		},
+		{
+			"name": "authenticate",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test1\",\n    \"password\": \"pass\"\n}"
+				},
+				"url": "http://localhost:8443/authenticate"
+			},
+			"response": []
+		},
+		{
+			"name": "invalidate-token",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTIwMjY2NTgsInVzZXIiOiJ0ZXN0MSJ9.UQ0gPdlY0ZyWGDB-1OkbYmFeEmWoJvaqMlAFVqQ-xZ0\"\n}"
+				},
+				"url": "http://localhost:8443/invalidate-token"
+			},
+			"response": []
+		},
+		{
+			"name": "check-role",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
+			"request": {
+				"method": "GET",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"token\": \"oHM3AFbRMZYYR92O6HmmiuleeNFHiWQ7pIFMs9mx7Bs=\",\n    \"roleName\": \"role1\"\n}"
+				},
+				"url": "http://localhost:8443/check-role"
+			},
+			"response": []
+		},
+		{
+			"name": "get-all-roles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": "http://localhost:8443/get-all-roles"
+			},
+			"response": []
+		}
+	]
+}
