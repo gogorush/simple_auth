@@ -9,18 +9,34 @@ import (
 	"github.com/golang-jwt/jwt/v5"
 )
 
-var tokenDuration = 2 * time.Hour
+type TokenService interface {
+	GenerateToken(username string) (TokenDetails, error)
+	ValidateToken(tokenString string) (string, error)
+	InvalidateToken(tokenString string)
+}
 
-var jwtKey = []byte("your-secret-key") // This should ideally be more secure and not hardcoded
+type JWTTokenService struct {
+	jwtKey        []byte
+	tokenDuration time.Duration
+}
+
+func NewJWTTokenService(jwtKey []byte, tokenDuration time.Duration) *JWTTokenService {
+	return &JWTTokenService{jwtKey: jwtKey, tokenDuration: tokenDuration}
+}
+
+var TokenDuration = 2 * time.Hour
+
+var JwtKey = []byte("your-secret-key") // This should ideally be more secure and not hardcoded
 
 // GenerateToken generates a JWT for the given user
-func GenerateToken(username string) (TokenDetails, error) {
-	expirationTime := time.Now().Add(tokenDuration).Unix()
+func (s *JWTTokenService) GenerateToken(username string) (TokenDetails, error) {
+
+	expirationTime := time.Now().Add(TokenDuration).Unix()
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"user": username,
 		"exp":  expirationTime,
 	})
-	tokenString, err := token.SignedString(jwtKey)
+	tokenString, err := token.SignedString(JwtKey)
 	if err != nil {
 		return TokenDetails{}, err
 	}
@@ -29,14 +45,15 @@ func GenerateToken(username string) (TokenDetails, error) {
 }
 
 // ValidateToken checks the given token's validity
-func ValidateToken(tokenString string) (string, error) {
+func (s *JWTTokenService) ValidateToken(tokenString string) (string, error) {
+
 	_, ok := Tokens.Get(tokenString)
 	if !ok {
 		return "", errors.New("invalid token")
 	}
 	claims := jwt.MapClaims{}
 	token, err := jwt.ParseWithClaims(tokenString, claims, func(token *jwt.Token) (interface{}, error) {
-		return jwtKey, nil
+		return JwtKey, nil
 	})
 	//fmt.Println(token, " hello ", err)
 
@@ -52,7 +69,7 @@ func ValidateToken(tokenString string) (string, error) {
 		return "", errors.New("invalid token claims exp")
 	}
 	if int64(exp) < time.Now().Unix() {
-		InvalidateToken(tokenString)
+		s.InvalidateToken(tokenString)
 		return "", errors.New("token expired here")
 	}
 
@@ -65,11 +82,12 @@ func ValidateToken(tokenString string) (string, error) {
 }
 
 // InvalidateToken removes a token, making it invalid
-func InvalidateToken(tokenString string) {
+func (s *JWTTokenService) InvalidateToken(tokenString string) {
 	Tokens.Delete(tokenString)
 }
 
 // SetTokenDuration allows changing the token duration for testing purposes
+// NOTE: for test only
 func setTokenDuration(duration time.Duration) {
-	tokenDuration = duration
+	TokenDuration = duration
 }

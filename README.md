@@ -57,9 +57,8 @@ make test
 
 ### Issues
 - role with actual meanful use case? (only some user could create-user,  some could delte roles)
-- delete role (this could lead to an break, user still have the role) api description is not clear
-- http or https server? Not defined, should be use nginx like proxy for https?
-- While using JWTs for authentication was my original idea, storing these tokens in memory presents challenges, especially when dealing with multiple services. While an in-memory database like Redis can be used for this purpose, it introduces additional costs. 
+- http or https server? Not defined, should be use nginx like proxy for https? (implemented and comment our)
+- While using JWTs for authentication was my original idea, storing these tokens in memory presents challenges, especially when dealing with multiple services. While an in-memory database like Redis can be used for this purpose, it introduces additional costs. (implement a in-memory storage with auto expire)
 
 ### License
 This project is licensed under the MIT License.

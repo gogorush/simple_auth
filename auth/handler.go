@@ -7,7 +7,9 @@ import (
 	"net/http"
 )
 
-var service AuthService = &InMemoryAuthService{} // Create an instance of the AuthService
+var service AuthService = &InMemoryAuthService{
+    TokenSvc: NewJWTTokenService(JwtKey, TokenDuration),
+} // Create an instance of the AuthService
 
 type UserRequest struct {
 	Username string `json:"username,omitempty"`
@@ -145,7 +147,7 @@ func HandleInvalidateToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	InvalidateToken(requestData.Token)
+	service.(*InMemoryAuthService).InvalidateToken(requestData.Token)
 	w.WriteHeader(http.StatusOK)
 }
 
