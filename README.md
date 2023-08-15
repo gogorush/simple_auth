@@ -4,21 +4,24 @@ This project provides a simple authentication service using Go. It supports func
 ## Structure
 The project is organized into the following structure:
 ```
+
 ├── Makefile
 ├── README.md
 ├── auth
+│   ├── InMemoryTokenService.go - self made token generation, validation, and invalidation (using priority queue)
 │   ├── handler.go - HTTP handlers for the authentication endpoints.
 │   ├── handler_test.go - Tests for the HTTP handlers.
 │   ├── model.go - Data models used in the authentication service.
 │   ├── service.go - Business logic for authentication and authorization.
 │   ├── service_test.go - Tests for the business logic.
-│   ├── tokens.go - JWT token generation, validation, and invalidation.
+│   ├── jwt_tokens.go - JWT token generation, validation, and invalidation.
 │   └── tokens_test.go - Tests for JWT token functionalities.
 ├── go.mod
 ├── go.sum
 ├── main.go - Entry point for the application.
-├── simple_auth
 └── utils
+    ├── PriorityQueue.go - A priority queue
+    ├── PriorityQueue_test.go - Tests for priority queue
     ├── concurrent_map.go - A thread-safe concurrent map implementation.
     ├── concurrent_map_test.go - Tests for the concurrent map.
     ├── hasher.go - Utility for hashing passwords.
@@ -53,7 +56,7 @@ make test
 - Thread-safe in-memory storage.
 
 ### External libs used
-- golang-jwt
+- golang-jwt (optional)
 
 ### Issues
 - role with actual meanful use case? (only some user could create-user,  some could delte roles)
