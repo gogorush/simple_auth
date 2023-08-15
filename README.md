@@ -1,4 +1,6 @@
-# Simple Authentication Service
+# Simple Authsientication Service
+This is a version with my own understandings
+
 This project provides a simple authentication service using Go. It supports functionalities such as user creation, role management, and token-based authentication.
 
 ## Structure
@@ -51,7 +53,7 @@ make test
 
 ### Features
 - User registration and authentication.
-- Role management (create, delete, assign?).
+- Role management (create, delete, assign).
 - Token-based authentication using JWT.
 - Thread-safe in-memory storage.
 
@@ -59,7 +61,6 @@ make test
 - golang-jwt (optional)
 
 ### Issues
-- role with actual meanful use case? (only some user could create-user,  some could delte roles)
 - http or https server? Not defined, should be use nginx like proxy for https? (implemented and comment our)
 - While using JWTs for authentication was my original idea, storing these tokens in memory presents challenges, especially when dealing with multiple services. While an in-memory database like Redis can be used for this purpose, it introduces additional costs. (implement a in-memory storage with auto expire)
 

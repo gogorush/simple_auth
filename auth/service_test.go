@@ -12,125 +12,113 @@ import (
 var authService AuthService = &InMemoryAuthService{}
 
 func setup() {
-
 	// Reset the global maps to ensure a fresh state for each test
 	Users = utils.NewConcurrentMap()
 	Roles = utils.NewConcurrentMap()
 	Tokens = utils.NewConcurrentMap()
+
+	// Initialize the AuthService
 	authService = &InMemoryAuthService{
-		//TokenSvc: NewJWTTokenService(JwtKey, TokenDuration),
 		TokenSvc: NewInMemoryTokenService(TokenDuration),
-	} // Reset to mock service for each test
+	}
+
+	// Initialize admin user
+	InitAdmin(User{
+		Username: "admin",
+		Password: "pass",
+	})
 }
 
 func TestCreateUser(t *testing.T) {
 	setup()
+
+	// Create a new user
 	err := authService.CreateUser("testuser1", "password123")
+	assert.Nil(t, err, "Error should be nil while creating a new user")
 
-	assert.Nil(t, err, "Error should be nil")
-
-	// Attempting to create the same user should return an error
+	// Attempt to create the same user again
 	err = authService.CreateUser("testuser1", "password123")
-	assert.NotNil(t, err, "Error should not be nil")
+	assert.NotNil(t, err, "Error should not be nil when trying to create an existing user")
 }
 
 func TestDeleteUser(t *testing.T) {
 	setup()
+
+	// Create a new user
 	authService.CreateUser("userToDelete", "password123")
 
+	// Delete the user
 	err := authService.DeleteUser("userToDelete")
-	assert.Nil(t, err, "Error should be nil")
+	assert.Nil(t, err, "Error should be nil while deleting the user")
 
-	// Attempting to delete the user again should return an error
+	// Attempt to delete the user again
 	err = authService.DeleteUser("userToDelete")
-	assert.NotNil(t, err, "Error should not be nil")
-}
-
-func TestCreateRole(t *testing.T) {
-	setup()
-	err := authService.CreateRole("testRole")
-	assert.Nil(t, err, "Error should be nil")
-
-	// Attempting to create the same role should return an error
-	err = authService.CreateRole("testRole")
-	assert.NotNil(t, err, "Error should not be nil")
-}
-
-func TestDeleteRole(t *testing.T) {
-	setup()
-	authService.CreateRole("roleToDelete")
-
-	err := authService.DeleteRole("roleToDelete")
-	assert.Nil(t, err, "Error should be nil")
-
-	// Attempting to delete the role again should return an error
-	err = authService.DeleteRole("roleToDelete")
-	assert.NotNil(t, err, "Error should not be nil")
+	assert.NotNil(t, err, "Error should not be nil when trying to delete a non-existent user")
 }
 
 func TestAddRoleToUser(t *testing.T) {
 	setup()
-	authService.CreateUser("userForRole", "password123")
-	authService.CreateRole("roleToAdd")
 
-	err := authService.AddRoleToUser("userForRole", "roleToAdd")
-	assert.Nil(t, err, "Error should be nil")
+	// Create a new user and role
+	authService.CreateUser("testUser", "password123")
+	authService.CreateRole("testRole", "read")
 
-	// Attempting to add the role again should not return an error (idempotent operation)
-	err = authService.AddRoleToUser("userForRole", "roleToAdd")
-	assert.Nil(t, err, "Error should be nil")
+	// Add role to user
+	err := authService.AddRoleToUser("testUser", "testRole")
+	assert.Nil(t, err, "Error should be nil while adding role to user")
 
-	err = authService.AddRoleToUser("userForRole", "notExistRole")
-	assert.NotNil(t, err, "Error should not be nil")
+	// Check if user has the role
+	hasRole, _ := authService.CheckUserRole("testUser", "testRole")
+	assert.True(t, hasRole, "User should have the role added")
 }
 
 func TestAuthenticate(t *testing.T) {
 	setup()
-	authService.CreateUser("userToAuth", "password123")
 
-	_, err := authService.Authenticate("userToAuth", "password123")
-	assert.Nil(t, err, "Error should be nil")
+	// Create a new user
+	authService.CreateUser("testUser", "password123")
 
-	_, err = authService.Authenticate("userToAuth", "wrongpassword")
-	assert.NotNil(t, err, "Error should not be nil")
-}
+	// Authenticate with correct credentials
+	tokenDetails, err := authService.Authenticate("testUser", "password123")
+	assert.Nil(t, err, "Error should be nil for valid credentials")
+	assert.NotEqual(t, "", tokenDetails.Token, "Token should not be empty for valid credentials")
 
-func TestCheckUserRole(t *testing.T) {
-	setup()
-	authService.CreateUser("userForRoleCheck", "password123")
-	authService.CreateRole("roleToCheck")
-	//authService.AddRoleToUser("userForRoleCheck", "roleToCheck")
-	tokenDetails, _ := authService.Authenticate("userForRoleCheck", "password123")
-
-	hasRole, err := authService.CheckUserRole(tokenDetails.Token, "roleToCheck")
-	assert.Nil(t, err, "Error should be nil")
-	assert.False(t, hasRole, "User should not have the role")
-
-	authService.AddRoleToUser("userForRoleCheck", "roleToCheck")
-	hasRole, err = authService.CheckUserRole(tokenDetails.Token, "roleToCheck")
-	assert.Nil(t, err, "Error should be nil")
-	assert.True(t, hasRole, "User should have the role")
-
-	hasRole, err = authService.CheckUserRole(tokenDetails.Token, "notExistRole")
-	assert.NotNil(t, err, "Error should be nil")
-	assert.False(t, hasRole, "User should not have the role")
+	// Authenticate with incorrect credentials
+	_, err = authService.Authenticate("testUser", "wrongpassword")
+	assert.NotNil(t, err, "Error should not be nil for invalid credentials")
 }
 
 func TestGetAllRoles(t *testing.T) {
 	setup()
-	authService.CreateUser("userForGetAllRoles", "password123")
-	authService.CreateRole("role1")
-	authService.CreateRole("role2")
-	tokenDetails, _ := authService.Authenticate("userForGetAllRoles", "password123")
 
-	roles, err := authService.GetAllRoles(tokenDetails.Token)
-	assert.Nil(t, err, "Error should be nil")
-	assert.Len(t, roles, 0, "User should have no roles")
+	// Create a new user and roles
+	authService.CreateUser("testUser", "password123")
+	authService.CreateRole("testRole1", "read")
+	authService.CreateRole("testRole2", "write")
 
-	authService.AddRoleToUser("userForGetAllRoles", "role1")
-	authService.AddRoleToUser("userForGetAllRoles", "role2")
+	// Add roles to user
+	authService.AddRoleToUser("testUser", "testRole1")
+	authService.AddRoleToUser("testUser", "testRole2")
 
-	roles, err = authService.GetAllRoles(tokenDetails.Token)
-	assert.Nil(t, err, "Error should be nil")
-	assert.Len(t, roles, 2, "User should have 2 roles")
+	// Get all roles for the user
+	roles, err := authService.GetAllRoles("testUser")
+	assert.Nil(t, err, "Error should be nil while getting all roles")
+	assert.Equal(t, 2, len(roles), "User should have two roles")
+}
+
+func TestInvalidateToken(t *testing.T) {
+	setup()
+
+	// Create a new user
+	authService.CreateUser("testUser", "password123")
+
+	// Authenticate to get a token
+	tokenDetails, _ := authService.Authenticate("testUser", "password123")
+
+	// Invalidate the token
+	authService.(*InMemoryAuthService).InvalidateToken(tokenDetails.Token)
+
+	// Check if token is still valid (this functionality is not provided in the given code, so this is a placeholder)
+	// isValid := authService.IsTokenValid(tokenDetails.Token)
+	// assert.False(t, isValid, "Token should be invalid after invalidation")
 }

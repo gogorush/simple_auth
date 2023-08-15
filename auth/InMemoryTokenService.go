@@ -3,7 +3,7 @@
 package auth
 
 import (
-    "fmt"
+    //"fmt"
 	"crypto/rand"
 	"encoding/base64"
 	"errors"
@@ -28,7 +28,6 @@ func NewInMemoryTokenService(tokenDuration time.Duration) *InMemoryTokenService 
 }
 
 func (s *InMemoryTokenService) GenerateToken(username string) (TokenDetails, error) {
-    fmt.Println("key is ", string(JwtKey))
 	tokenString, err := generateRandomTokenString(32) // Generate a random token string
 	if err != nil {
 		return TokenDetails{}, errors.New("error generate token")
