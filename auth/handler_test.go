@@ -272,6 +272,14 @@ func TestHandleGenerateToken(t *testing.T) {
 
 func TestHandleInvalidateToken(t *testing.T) {
 	setupService()
+    // Create a mock user
+    userReqBody := bytes.NewBufferString(`{"username":"testuser", "password":"testpass"}`)
+    userReq, err := http.NewRequest("POST", "/create-user", userReqBody)
+    if err != nil {
+        t.Fatal(err)
+    }
+    userRR := httptest.NewRecorder()
+    HandleCreateUser(userRR, userReq)
 
 	tokenDetails, _ := service.Authenticate("testuser", "testpass")
 	reqBody := bytes.NewBufferString(`{"token":"` + tokenDetails.Token + `"}`)
