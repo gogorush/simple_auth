@@ -4,6 +4,7 @@ package auth
 
 import (
 	"encoding/json"
+	"errors"
 	"net/http"
 )
 
@@ -32,6 +33,10 @@ func HandleCreateUser(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
 		return
 	}
+	if requestData.Username == "" || requestData.Password == "" {
+		http.Error(w, "error parameters", http.StatusBadRequest)
+		return
+	}
 
 	err := service.CreateUser(requestData.Username, requestData.Password)
 	if err != nil {
@@ -46,6 +51,11 @@ func HandleDeleteUser(w http.ResponseWriter, r *http.Request) {
 	var requestData UserRequest
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+
+	if requestData.Username == "" {
+		http.Error(w, "error parameters", http.StatusBadRequest)
 		return
 	}
 
@@ -65,6 +75,10 @@ func HandleCreateRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if requestData.RoleName == "" {
+		http.Error(w, "error parameters", http.StatusBadRequest)
+		return
+	}
 	err := service.CreateRole(requestData.RoleName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -81,6 +95,10 @@ func HandleDeleteRole(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if requestData.RoleName == "" {
+		http.Error(w, "error parameters", http.StatusBadRequest)
+		return
+	}
 	err := service.DeleteRole(requestData.RoleName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -97,6 +115,10 @@ func HandleAddRoleToUser(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if requestData.Username == "" || requestData.RoleName == "" {
+		http.Error(w, "error parameters", http.StatusBadRequest)
+		return
+	}
 	err := service.AddRoleToUser(requestData.Username, requestData.RoleName)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -110,6 +132,10 @@ func HandleAuthenticate(w http.ResponseWriter, r *http.Request) {
 	var requestData UserRequest
 	if err := json.NewDecoder(r.Body).Decode(&requestData); err != nil {
 		http.Error(w, "Bad Request", http.StatusBadRequest)
+		return
+	}
+	if requestData.Username == "" || requestData.Password == "" {
+		http.Error(w, "error parameters", http.StatusBadRequest)
 		return
 	}
 
@@ -129,6 +155,10 @@ func HandleGenerateToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if requestData.Username == "" || requestData.Password == "" {
+		http.Error(w, "error parameters", http.StatusBadRequest)
+		return
+	}
 	tokenDetails, err := service.Authenticate(requestData.Username, requestData.Password)
 	if err != nil {
 		http.Error(w, err.Error(), http.StatusBadRequest)
@@ -145,6 +175,10 @@ func HandleInvalidateToken(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
+	if requestData.Token == "" {
+		http.Error(w, "error parameters", http.StatusBadRequest)
+		return
+	}
 	InvalidateToken(requestData.Token)
 	w.WriteHeader(http.StatusOK)
 }

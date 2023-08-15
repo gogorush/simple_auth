@@ -2,15 +2,23 @@
 	"info": {
 		"_postman_id": "326a5265-e1b0-4daf-858a-71f70159b9b9",
 		"name": "local",
-		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"schema": "https://schema.getpostman.com/json/collection/v2.0.0/collection.json",
 		"_exporter_id": "6002683"
 	},
 	"item": [
 		{
 			"name": "create-user",
+			"protocolProfileBehavior": {
+				"disableBodyPruning": true
+			},
 			"request": {
 				"method": "GET",
-				"header": []
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"username\": \"test1\",\n    \"password\": \"pass\"\n}"
+				},
+				"url": "http://localhost:8443/create-user"
 			},
 			"response": []
 		},
@@ -26,17 +34,7 @@
 					"mode": "raw",
 					"raw": "{\n    \"username\": \"\n}"
 				},
-				"url": {
-					"raw": "http://localhost:8443/delete-user",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8443",
-					"path": [
-						"delete-user"
-					]
-				}
+				"url": "http://localhost:8443/delete-user"
 			},
 			"response": []
 		},
@@ -52,17 +50,7 @@
 					"mode": "raw",
 					"raw": "{\n    \"roleName\": \"role1\"\n}"
 				},
-				"url": {
-					"raw": "http://localhost:8443/create-role",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8443",
-					"path": [
-						"create-role"
-					]
-				}
+				"url": "http://localhost:8443/create-role"
 			},
 			"response": []
 		},
@@ -78,17 +66,7 @@
 					"mode": "raw",
 					"raw": "{\n    \"roleName\": \"role1\"\n}"
 				},
-				"url": {
-					"raw": "http://localhost:8443/delete-role",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8443",
-					"path": [
-						"delete-role"
-					]
-				}
+				"url": "http://localhost:8443/delete-role"
 			},
 			"response": []
 		},
@@ -104,17 +82,7 @@
 					"mode": "raw",
 					"raw": "{\n    \"username\": \"test2\",\n    \"roleName\": \"role1\"\n}"
 				},
-				"url": {
-					"raw": "http://localhost:8443/add-role-to-user",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8443",
-					"path": [
-						"add-role-to-user"
-					]
-				}
+				"url": "http://localhost:8443/add-role-to-user"
 			},
 			"response": []
 		},
@@ -130,17 +98,7 @@
 					"mode": "raw",
 					"raw": "{\n    \"username\": \"test1\",\n    \"password\": \"pass\"\n}"
 				},
-				"url": {
-					"raw": "http://localhost:8443/authenticate",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8443",
-					"path": [
-						"authenticate"
-					]
-				}
+				"url": "http://localhost:8443/authenticate"
 			},
 			"response": []
 		},
@@ -156,17 +114,7 @@
 					"mode": "raw",
 					"raw": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTIwMjY2NTgsInVzZXIiOiJ0ZXN0MSJ9.UQ0gPdlY0ZyWGDB-1OkbYmFeEmWoJvaqMlAFVqQ-xZ0\"\n}"
 				},
-				"url": {
-					"raw": "http://localhost:8443/invalidate-token",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8443",
-					"path": [
-						"invalidate-token"
-					]
-				}
+				"url": "http://localhost:8443/invalidate-token"
 			},
 			"response": []
 		},
@@ -182,17 +130,7 @@
 					"mode": "raw",
 					"raw": "{\n    \"token\": \"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJleHAiOjE2OTIwMjY4OTksInVzZXIiOiJ0ZXN0MSJ9.yaHxmnbE3n3jf-n7PeNOgAYrfiXKCHAFDz7oaQgTODA\",\n    \"roleName\": \"role3\"\n}"
 				},
-				"url": {
-					"raw": "http://localhost:8443/check-role",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8443",
-					"path": [
-						"check-role"
-					]
-				}
+				"url": "http://localhost:8443/check-role"
 			},
 			"response": []
 		},
@@ -201,17 +139,7 @@
 			"request": {
 				"method": "GET",
 				"header": [],
-				"url": {
-					"raw": "http://localhost:8443/get-all-roles",
-					"protocol": "http",
-					"host": [
-						"localhost"
-					],
-					"port": "8443",
-					"path": [
-						"get-all-roles"
-					]
-				}
+				"url": "http://localhost:8443/get-all-roles"
 			},
 			"response": []
 		}
