@@ -32,7 +32,7 @@ func (s *InMemoryTokenService) GenerateToken(username string) (TokenDetails, err
 		return TokenDetails{}, errors.New("error generate token")
 	}
 	expirationTime := time.Now().Add(s.tokenDuration).Unix()
-	tokenDetails := TokenDetails{Token: tokenString, ExpiresAt: expirationTime}
+	tokenDetails := TokenDetails{UserName: username, Token: tokenString, ExpiresAt: expirationTime}
 	s.tokens.Set(tokenString, tokenDetails)
 	s.tokenQueue.Push(&utils.Item{Token: tokenString, ExpiresAt: expirationTime})
 	return tokenDetails, nil
@@ -48,7 +48,7 @@ func (s *InMemoryTokenService) ValidateToken(tokenString string) (string, error)
 		s.InvalidateToken(tokenString)
 		return "", errors.New("token expired")
 	}
-	return tokenDetails.Token, nil
+	return tokenDetails.UserName, nil
 }
 
 func (s *InMemoryTokenService) InvalidateToken(tokenString string) {

@@ -8,7 +8,8 @@ import (
 )
 
 var service AuthService = &InMemoryAuthService{
-    TokenSvc: NewJWTTokenService(JwtKey, TokenDuration),
+    //TokenSvc: NewJWTTokenService(JwtKey, TokenDuration),
+    TokenSvc: NewInMemoryTokenService(TokenDuration),
 } // Create an instance of the AuthService
 
 type UserRequest struct {

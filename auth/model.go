@@ -17,8 +17,15 @@ type Role struct {
 }
 
 type TokenDetails struct {
+    UserName string
 	Token     string
 	ExpiresAt int64
+}
+
+type UserTokenDetails struct {
+	Token     string
+	ExpiresAt int64
+    UserName string
 }
 
 var (

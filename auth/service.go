@@ -20,8 +20,8 @@ type AuthService interface {
 	GetAllRoles(tokenString string) ([]Role, error)
 }
 
-type InMemoryAuthService struct{
-    TokenSvc TokenService
+type InMemoryAuthService struct {
+	TokenSvc TokenService
 }
 
 func (s *InMemoryAuthService) CreateUser(username, password string) error {
@@ -117,7 +117,7 @@ func (s *InMemoryAuthService) Authenticate(username, password string) (TokenDeta
 // CheckUserRole checks if a user has a specific role
 func (s *InMemoryAuthService) CheckUserRole(tokenString, roleName string) (bool, error) {
 
-	username, err :=s.TokenSvc.ValidateToken(tokenString)
+	username, err := s.TokenSvc.ValidateToken(tokenString)
 	if err != nil {
 		return false, err
 	}
@@ -146,7 +146,7 @@ func (s *InMemoryAuthService) CheckUserRole(tokenString, roleName string) (bool,
 // GetAllRoles retrieves all roles for a user
 func (s *InMemoryAuthService) GetAllRoles(tokenString string) ([]Role, error) {
 
-	username, err :=s.TokenSvc.ValidateToken(tokenString)
+	username, err := s.TokenSvc.ValidateToken(tokenString)
 	if err != nil {
 		return nil, err
 	}
@@ -169,5 +169,5 @@ func (s *InMemoryAuthService) GetAllRoles(tokenString string) ([]Role, error) {
 }
 
 func (s *InMemoryAuthService) InvalidateToken(tokenString string) {
-    s.TokenSvc.InvalidateToken(tokenString)
+	s.TokenSvc.InvalidateToken(tokenString)
 }
